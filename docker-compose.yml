@@ -6,6 +6,26 @@ services:
       - "3800:3000"
     volumes:
       - .:/app
-      - /app/node_modules # Evita que o node_modules local sobrescreva o do contêiner
+      - /app/node_modules
     environment:
       - SERVERLESS_ACCESS_KEY=${SERVERLESS_ACCESS_KEY}
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+      - DYNAMODB_ENDPOINT=http://localstack:4566
+    depends_on:
+      - localstack
+
+  localstack:
+    container_name: localstack_main
+    image: localstack/localstack:latest
+    ports:
+      - "4666:4566"            # Porta padrão do LocalStack
+    environment:
+      - SERVICES=dynamodb      # Vamos habilitar apenas o DynamoDB por enquanto
+      - DEBUG=1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "./localstack_data:/var/lib/localstack"
+      - "./init:/etc/localstack/init/ready.d"
+      - "/var/run/docker.sock:/var/run/docker.sock"

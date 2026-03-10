@@ -1,11 +1,18 @@
-FROM node:20-alpine
+FROM node
 
-RUN npm install -g serverless
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
 COPY package*.json ./
 
 RUN npm install
 
-CMD ["serverless", "offline", "--host", "0.0.0.0"]
+COPY . .
+
+EXPOSE 3000
+
+CMD ["npm", "start"]

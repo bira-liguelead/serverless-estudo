@@ -3,9 +3,24 @@ service: gerenciador-tarefas
 provider:
   name: aws
   runtime: nodejs20.x
+  iam:
+      role:
+        statements:
+          - Effect: Allow
+            Action:
+              - dynamodb:PutItem
+              - dynamodb:Scan
+            Resource: !GetAtt TarefasTable.Arn
 
 plugins:
   - serverless-offline
+
+custom:
+  localstack:
+    stages:
+      - dev
+    host: http://localstack
+    edgePort: 4566
 
 functions:
   listarTarefas:
@@ -20,3 +35,17 @@ functions:
       - httpApi:
           path: /cadastrar
           method: post
+
+resources:
+  Resources:
+    TarefasTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Tarefas
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: N
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
