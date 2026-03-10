@@ -1,0 +1,22 @@
+service: gerenciador-tarefas
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+
+plugins:
+  - serverless-offline
+
+functions:
+  listarTarefas:
+    handler: src/tarefas.listar
+    events:
+      - httpApi:
+          path: /tarefas
+          method: get
+  cadastrarTarefas:
+    handler: src/tarefas.cadastrar
+    events:
+      - httpApi:
+          path: /cadastrar
+          method: post
